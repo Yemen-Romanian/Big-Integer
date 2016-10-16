@@ -25,28 +25,18 @@ public class MyBigInteger{
 
 
 
-    private static void zeroFill(MyBigInteger num1, MyBigInteger num2){
+    private static void zeroFill(MyBigInteger num1, MyBigInteger num2) {
 
         int size1 = num1.number.size();
         int size2 = num2.number.size();
 
-        ArrayList<Long> zeros = new ArrayList<>(Collections.nCopies(Math.abs(size1 -  size2), 0L));
+        ArrayList<Long> zeros = new ArrayList<>(Collections.nCopies(Math.abs(size1 - size2), 0L));
 
-        if(size1 > size2){
+        if (size1 > size2) {
             num2.number.addAll(zeros);
-        }
-        else if (size2 > size1){
+        } else if (size2 > size1) {
             num1.number.addAll(zeros);
         }
-    }
-
-
-    private void zeroFill(int pos){
-
-        ArrayList<Long> zeros = new ArrayList<>(Collections.nCopies(pos, 0L));
-
-        this.number.addAll(zeros);
-
     }
 
 
@@ -174,27 +164,6 @@ public class MyBigInteger{
 
         result.number.add(carry);
         return result;
-    }
-
-    private int getBitPos(long i){
-        int res = 0;
-        while (i != 1){
-            i >>= 1;
-            res++;
-        }
-        return res;
-    }
-
-
-    private static long LeftShift(long num){
-        long res = num << 1;
-        num = res;
-        long i = 0;
-        while(num != 1){
-            num >>= 1;
-            i++;
-        }
-        return res ^ (1 << i);
     }
 
 
@@ -334,24 +303,4 @@ public class MyBigInteger{
        MyBigInteger[] res = {R, Q};
        return res;
    }
-
-
-    public static void main(String[] args){
-
-		/*MyBigInteger A = new MyBigInteger("10000000000000000000000000000000000001");
-        MyBigInteger B = new MyBigInteger("2");
-        System.out.println("Addition:");
-		System.out.println(A.add(B).toHexString());
-        System.out.println("Subtraction:");
-        System.out.println(A.sub(B).toHexString());
-        System.out.println("Multiplication:");
-        System.out.println(A.multiply(B).toHexString());
-        System.out.println("Power:");
-        System.out.println(A.pow(B).toHexString());*/
-
-        MyBigInteger A = new MyBigInteger("123456789");
-        MyBigInteger B = new MyBigInteger("0");
-        MyBigInteger[] res = A.divMod(B);
-        System.out.println(res[0].toHexString());
-	} 
 }
