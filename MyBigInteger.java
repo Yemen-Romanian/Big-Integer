@@ -4,7 +4,7 @@ import java.util.Collections;
 
 public class MyBigInteger implements Comparable<MyBigInteger>{
 
-	private final long BASE = 0x10000L;
+	private static final long BASE = 0x10000L;
 
 	public static final MyBigInteger ZERO = new MyBigInteger("0");
     public static final MyBigInteger ONE = new MyBigInteger("1");
@@ -364,9 +364,28 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
         return d;
     }
 
-    public static void main(String[] args){
-    	MyBigInteger A = new MyBigInteger("fffffff");
-    	MyBigInteger B = new MyBigInteger("12345");
-    	System.out.println(A.gcd(B).toHexString());
+
+    private MyBigInteger KillLastDigits(int k) {
+        MyBigInteger result = new MyBigInteger();
+        result.number = new ArrayList<>(number.subList(k, number.size()));
+        return result;
+    }
+
+
+    public MyBigInteger mod(MyBigInteger num) {
+        int k = num.number.size();
+        MyBigInteger m = ONE.LongShiftBitsToHigh(32 * k);
+        m = m.divMod(num)[1];
+        MyBigInteger q = this.KillLastDigits(k - 1);
+        q = q.multiply(m);
+        q = q.KillLastDigits(k + 1);
+
+        MyBigInteger res = q.multiply(num);
+
+        MyBigInteger r = this.sub(res);
+        while (r.compareTo(num) != -1) {
+            r = r.sub(num);
+        }
+        return r;
     }
 }
