@@ -243,7 +243,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 
         MyBigInteger min = num.number.size() < this.number.size() ? num : this;
         MyBigInteger a = (min == num) ? this: num;
-        MyBigInteger result = ZERO;
+        MyBigInteger result = new MyBigInteger("0");
         MyBigInteger temp;
 
         for (int i = 0; i < Math.min(num.number.size(), this.number.size()); i++){
@@ -371,11 +371,16 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
         return result;
     }
 
+    private void addZeros(int k){
+        ArrayList<Long> zeros = new ArrayList<>(Collections.nCopies(k, 0L));
+        this.number.addAll(zeros);
+    }
+
 
     public MyBigInteger mod(MyBigInteger num) {
         int k = num.number.size();
-        MyBigInteger m = ONE.LongShiftBitsToHigh(32 * k);
-        m = m.divMod(num)[1];
+        this.addZeros(2*k - number.size());
+        MyBigInteger m = ONE.LongShiftBitsToHigh(32 * k).divMod(num)[1];
         MyBigInteger q = this.KillLastDigits(k - 1);
         q = q.multiply(m);
         q = q.KillLastDigits(k + 1);
@@ -386,6 +391,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
         while (r.compareTo(num) != -1) {
             r = r.sub(num);
         }
+        r.cleanZeros();
         return r;
     }
 }
