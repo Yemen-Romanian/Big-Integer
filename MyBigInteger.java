@@ -177,32 +177,39 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 
     private MyBigInteger LongLeftShiftBit(){
         MyBigInteger result = new MyBigInteger();
-        byte bit = 0;
 
-        if ((Long.SIZE - Long.numberOfLeadingZeros(number.get(0)) == 16)){
-            result.number.add((number.get(0) ^ (1 << 15)) << 1);
-            bit = 1;
-        }
-        else{
-            result.number.add(number.get(0) << 1);
-        }
-        long curr;
+        result.number.add((number.get(0) << 1) & 0xFFFF);
 
         for (int i = 1; i < number.size(); i++){
-            curr = number.get(i);
-
-            if ((Long.SIZE - Long.numberOfLeadingZeros(curr)) == 16){
-                result.number.add((curr ^ (1 << 15)) << 1 | bit);
-                bit = 1;
-            }
-            else{
-                result.number.add(curr << 1 | bit);
-                bit = 0;
-            }
+            result.number.add(((number.get(i) << 1) | (number.get(i-1) >> 15)) & 0xFFFF);
         }
 
-        if (bit == 1){
-            result.number.add(1L);
+        long b = (number.get(number.size() - 1) >> 15);
+        if (b == 1){
+            result.number.add(b);
+        }
+
+        return result;
+    }
+
+
+    private MyBigInteger LongRightShitBit(){
+        MyBigInteger result = new MyBigInteger();
+
+        for (int i = 0; i < number.size() - 1; i++){
+            result.number.add(number.get(i) >> 1 | ((number.get(i+1) & 1)) << 15);
+        }
+        result.number.add(number.get(number.size()-1) >> 1);
+        return result;
+    }
+
+
+    public MyBigInteger LongShiftBitsToLow(long n){
+        if (n == 0) return this;
+
+        MyBigInteger result = this.LongRightShitBit();
+        for (int i = 0; i < n - 1; i++){
+            result = result.LongRightShitBit();
         }
 
         return result;
@@ -236,7 +243,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 
         MyBigInteger min = num.number.size() < this.number.size() ? num : this;
         MyBigInteger a = (min == num) ? this: num;
-        MyBigInteger result = new MyBigInteger("0");
+        MyBigInteger result = ZERO;
         MyBigInteger temp;
 
         for (int i = 0; i < Math.min(num.number.size(), this.number.size()); i++){
@@ -252,8 +259,8 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 
     public MyBigInteger pow(MyBigInteger exponent){
 
-        MyBigInteger result = new MyBigInteger("1");
-        MyBigInteger[] pows = new MyBigInteger[15];
+        MyBigInteger result = ONE;
+        MyBigInteger[] pows = new MyBigInteger[16];
 
         pows[0] = new MyBigInteger("1");
         pows[1] = this;
@@ -278,7 +285,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 
 
    public MyBigInteger[] divMod(MyBigInteger num) {
-       if (num.compareTo(new MyBigInteger("0")) == 0){
+       if (num.compareTo(ZERO) == 0){
            throw new ArithmeticException("Division by zero!");
        }
 
@@ -286,7 +293,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
        long t;
        int index;
        MyBigInteger R = new MyBigInteger(this.toHexString());
-       MyBigInteger Q = new MyBigInteger("0");
+       MyBigInteger Q = ZERO;
        MyBigInteger C;
 
        while (R.compareTo(num) != -1) {
@@ -311,4 +318,55 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
        MyBigInteger[] res = {R, Q};
        return res;
    }
+
+
+    private boolean isEven() {
+        return (number.get(0) & 1) == 0;
+    }
+
+
+    public MyBigInteger min(MyBigInteger num) {
+        return this.compareTo(num) == -1 ? this : num;
+    }
+
+
+    public MyBigInteger max(MyBigInteger num) {
+        return this.compareTo(num) == 1 ? this : num;
+    }
+
+
+   public MyBigInteger gcd(MyBigInteger num) {
+        MyBigInteger d = ONE;
+        MyBigInteger arg = new MyBigInteger(this);
+
+        while (arg.isEven() && num.isEven()) {
+            arg = arg.LongRightShitBit();
+            num = num.LongRightShitBit();
+            d = d.LongLeftShiftBit();
+        }
+
+        while (arg.isEven()) {
+            arg = arg.LongRightShitBit();
+        }
+
+        MyBigInteger max, min;
+        while (num.compareTo(ZERO) != 0) {
+            while (num.isEven()) {
+                num = num.LongRightShitBit();
+            }
+            max = arg.max(num);
+            min = arg.min(num);
+            arg = min;
+            num = max.sub(arg);
+        }
+
+        d = d.multiply(arg);
+        return d;
+    }
+
+    public static void main(String[] args){
+    	MyBigInteger A = new MyBigInteger("fffffff");
+    	MyBigInteger B = new MyBigInteger("12345");
+    	System.out.println(A.gcd(B).toHexString());
+    }
 }
