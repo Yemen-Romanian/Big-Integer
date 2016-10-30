@@ -2,9 +2,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class MyBigInteger{
+public class MyBigInteger implements Comparable<MyBigInteger>{
 
 	private final long BASE = 0x10000L;
+
+	public static final MyBigInteger ZERO = new MyBigInteger("0");
+    public static final MyBigInteger ONE = new MyBigInteger("1");
 
 	private ArrayList<Long> number = new ArrayList<>();
 
@@ -22,6 +25,11 @@ public class MyBigInteger{
 	public MyBigInteger(){
 
 	}
+
+
+	public MyBigInteger(MyBigInteger obj){
+        number = new ArrayList<>(obj.number);
+    }
 
 
 
@@ -167,7 +175,7 @@ public class MyBigInteger{
     }
 
 
-    private MyBigInteger LongShiftBit(){
+    private MyBigInteger LongLeftShiftBit(){
         MyBigInteger result = new MyBigInteger();
         byte bit = 0;
 
@@ -207,11 +215,11 @@ public class MyBigInteger{
             result = this;
         }
         else{
-            result = this.LongShiftBit();
+            result = this.LongLeftShiftBit();
         }
 
         for (int i = 0; i < n - 1; i++){
-            result = result.LongShiftBit();
+            result = result.LongLeftShiftBit();
         }
         return result;
     }
