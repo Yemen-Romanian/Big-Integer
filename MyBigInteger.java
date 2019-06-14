@@ -7,7 +7,7 @@ public class MyBigInteger implements Comparable<MyBigInteger>{
 	private static final long BASE = 0x10000L;
 
 	public static final MyBigInteger ZERO = new MyBigInteger("0");
-    public static final MyBigInteger ONE = new MyBigInteger("1");
+        public static final MyBigInteger ONE = new MyBigInteger("1");
 
 	private ArrayList<Long> number = new ArrayList<>();
 
